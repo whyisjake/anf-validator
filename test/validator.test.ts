@@ -116,22 +116,33 @@ describe('validateSchema — edge cases', () => {
     expect(errors.length).toBeGreaterThan(0);
   });
 
-  it('accepts a component with an unknown role (open enum)', () => {
-    // ANF evolves — future roles should not produce false positives.
-    // The schema uses a known enum but we don't want STRICT rejection of unknown roles.
-    // This test verifies valid-article passes; role-specific tests use known roles.
+  it('accepts embedwebvideo and embedvideo roles', () => {
+    const data = fixture('valid-article.json') as Record<string, unknown>;
+    for (const role of ['embedwebvideo', 'embedvideo']) {
+      const modified = {
+        ...data,
+        components: [{
+          role,
+          URL: 'https://www.youtube.com/embed/0qwALOOvUik',
+          aspectRatio: 1.777,
+        }],
+      };
+      const errors = validateSchema(modified);
+      const roleErrors = errors.filter(e => e.instancePath === '/components/0/role');
+      expect(roleErrors, `role "${role}" should be valid`).toHaveLength(0);
+    }
+  });
+
+  it('flags a genuinely unknown role', () => {
     const data = fixture('valid-article.json') as Record<string, unknown>;
     const modified = {
       ...data,
       components: [{ role: 'future-unknown-role-xyz', text: 'test' }],
     };
-    // Unknown role produces an enum error — that's currently expected behavior.
-    // If we later switch to an open enum, this test should assert no errors.
-    // For now just validate it produces consistent results.
     const errors = validateSchema(modified);
-    // Should produce exactly one error (enum violation) — not crash or throw.
     expect(() => validateSchema(modified)).not.toThrow();
-    expect(Array.isArray(errors)).toBe(true);
+    const roleErrors = errors.filter(e => e.instancePath === '/components/0/role');
+    expect(roleErrors.length).toBeGreaterThan(0);
   });
 });
 

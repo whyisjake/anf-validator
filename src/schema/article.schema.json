@@ -165,6 +165,8 @@
             "instagram",
             "facebook_post",
             "embed",
+            "embedwebvideo",
+            "embedvideo",
             "banner_advertisement",
             "medium_rectangle_advertisement",
             "divider",
@@ -193,7 +195,14 @@
             "author",
             "broadcaster_ad",
             "collection",
-            "text"
+            "text",
+            "podcast",
+            "replaykit",
+            "place_overlay",
+            "scalable_image",
+            "add_to_apple_news",
+            "social_media_button",
+            "sticker"
           ]
         },
         "text": {
