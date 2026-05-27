@@ -1,10 +1,12 @@
 /**
- * Converts validation errors from validateSchema() and validateCrossRefs()
- * into VS Code Diagnostic objects, using json-source-map to map JSON Pointers
- * to line/column positions.
+ * Converts validation errors from validateSchema(), validateCrossRefs(), and
+ * URL reachability checks into VS Code Diagnostic objects.
  *
- * parse() is called once here; the { data, pointers } result is shared with
- * both validators to avoid double-parsing the document.
+ * getDiagnostics()    — synchronous; schema + cross-ref errors only
+ * getUrlDiagnostics() — async; URL reachability warnings
+ *
+ * parse() is called once in each function; both use json-source-map to map
+ * RFC 6901 JSON Pointers to line/column positions.
  */
 
 import * as vscode from 'vscode';
@@ -13,6 +15,7 @@ import type { ErrorObject } from 'ajv';
 import { validateSchema } from './validator';
 import { validateCrossRefs, type CrossRefError } from './crossRef';
 import { formatAjvError, formatCrossRefError } from './messages';
+import { extractUrls, checkUrl } from './urlChecker';
 
 /**
  * Parse and validate an article.json document, returning VS Code Diagnostics.
@@ -67,6 +70,83 @@ export function getDiagnostics(document: vscode.TextDocument): vscode.Diagnostic
   }
 
   return diagnostics;
+}
+
+/**
+ * Asynchronously check all HTTP(S) URL values in the article for reachability.
+ * Returns Warning-severity Diagnostics for any URL that returns a non-2xx/3xx
+ * response or fails to connect.
+ *
+ * Designed to run after getDiagnostics() — results are merged by the caller.
+ *
+ * @param document  The VS Code TextDocument for article.json.
+ * @param signal    Optional AbortSignal to cancel in-flight requests when the
+ *                  document changes again before checks complete.
+ */
+export async function getUrlDiagnostics(
+  document: vscode.TextDocument,
+  signal?: AbortSignal,
+): Promise<vscode.Diagnostic[]> {
+  const text = document.getText();
+
+  let parsed: ReturnType<typeof jsonSourceMap.parse>;
+  try {
+    parsed = jsonSourceMap.parse(text);
+  } catch {
+    // If the document is invalid JSON, getDiagnostics() already reported it.
+    return [];
+  }
+
+  const { data, pointers } = parsed;
+  const urls = extractUrls(data);
+  if (urls.length === 0) return [];
+
+  // Check all URLs concurrently.
+  const results = await Promise.all(
+    urls.map(async entry => {
+      try {
+        const result = await checkUrl(entry.url, signal);
+        return { entry, result };
+      } catch (err) {
+        // AbortError — the check was cancelled; skip this URL.
+        return null;
+      }
+    }),
+  );
+
+  const diagnostics: vscode.Diagnostic[] = [];
+
+  for (const item of results) {
+    if (!item) continue; // cancelled
+    const { entry, result } = item;
+    if (result.ok) continue;
+
+    const range = valueRange(document, pointers, entry.pointer);
+    const message = formatUrlError(entry.url, result.statusCode, result.error);
+    const diag = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Warning);
+    diag.source = 'ANF Validator';
+    diag.code = result.statusCode > 0 ? `url-${result.statusCode}` : 'url-unreachable';
+    diagnostics.push(diag);
+  }
+
+  return diagnostics;
+}
+
+/** Format a human-readable message for a failed URL check. */
+function formatUrlError(url: string, statusCode: number, error?: string): string {
+  if (error && statusCode === 0) {
+    return `Image URL is unreachable: ${url}\nNetwork error: ${error}`;
+  }
+  if (statusCode === 404) {
+    return `Image URL returned 404 Not Found: ${url}\nThe resource does not exist at this address. Check the URL or re-upload the asset.`;
+  }
+  if (statusCode === 403) {
+    return `Image URL returned 403 Forbidden: ${url}\nAccess was denied. The asset may require authentication or the URL may be incorrect.`;
+  }
+  if (statusCode >= 500) {
+    return `Image URL returned a server error (${statusCode}): ${url}\nThe server is having trouble. This may be temporary.`;
+  }
+  return `Image URL returned an unexpected status (${statusCode}): ${url}`;
 }
 
 // ---------------------------------------------------------------------------

@@ -24,7 +24,18 @@
     "workspaceContains:**/article.json"
   ],
   "main": "./dist/extension.js",
-  "contributes": {},
+  "contributes": {
+    "configuration": {
+      "title": "ANF Validator",
+      "properties": {
+        "anfValidator.checkUrls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check that image and media URLs in article.json are reachable (HTTP HEAD request). Disable on restricted or offline networks."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "node esbuild.js --production",
     "build": "node esbuild.js",
