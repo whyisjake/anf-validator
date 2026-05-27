@@ -3,7 +3,7 @@
   "displayName": "ANF Validator",
   "description": "Validates article.json files against the Apple News Format (ANF) specification",
   "version": "0.1.0",
-  "publisher": "whyisjake",
+  "publisher": "Jake Spurlock",
   "license": "MIT",
   "engines": {
     "vscode": "^1.90.0"
