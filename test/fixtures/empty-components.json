@@ -1,0 +1,12 @@
+{
+  "version": "1.26",
+  "identifier": "test",
+  "title": "Empty Components Array",
+  "language": "en",
+  "layout": {
+    "columns": 7,
+    "width": 1024
+  },
+  "components": [],
+  "componentTextStyles": {}
+}

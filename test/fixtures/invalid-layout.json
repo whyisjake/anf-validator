@@ -1,0 +1,17 @@
+{
+  "version": "1.26",
+  "identifier": "test",
+  "title": "Invalid Layout",
+  "language": "en",
+  "layout": {
+    "columns": "seven",
+    "width": -100
+  },
+  "components": [
+    {
+      "role": "body",
+      "text": "Layout columns is a string, width is negative."
+    }
+  ],
+  "componentTextStyles": {}
+}

@@ -1,0 +1,383 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/whyisjake/anf-validator/article.schema.json",
+  "title": "Apple News Format Article",
+  "description": "JSON Schema for article.json files conforming to the Apple News Format (ANF) specification.",
+  "type": "object",
+  "required": [
+    "version",
+    "identifier",
+    "title",
+    "language",
+    "layout",
+    "components",
+    "componentTextStyles"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "The version of the Apple News Format used in this article.",
+      "pattern": "^[0-9]+\\.[0-9]+"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "A unique identifier for this article. Must be 1–64 characters: letters, digits, hyphens, or underscores.",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the article.",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "description": "The language of the article in BCP 47 format (e.g. \"en\", \"en-US\").",
+      "pattern": "^[a-z]{2,3}(-[A-Z]{2,3})?$"
+    },
+    "layout": {
+      "$ref": "#/definitions/Layout"
+    },
+    "components": {
+      "type": "array",
+      "description": "An ordered array of component objects that make up the article body.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Component"
+      }
+    },
+    "componentTextStyles": {
+      "type": "object",
+      "description": "A dictionary of named ComponentTextStyle objects referenced by components.",
+      "additionalProperties": {
+        "$ref": "#/definitions/ComponentTextStyle"
+      }
+    },
+    "componentStyles": {
+      "type": "object",
+      "description": "A dictionary of named ComponentStyle objects referenced by components.",
+      "additionalProperties": {
+        "$ref": "#/definitions/ComponentStyle"
+      }
+    },
+    "componentLayouts": {
+      "type": "object",
+      "description": "A dictionary of named ComponentLayout objects referenced by components.",
+      "additionalProperties": {
+        "$ref": "#/definitions/ComponentLayout"
+      }
+    },
+    "textStyles": {
+      "type": "object",
+      "description": "A dictionary of named inline text styles.",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "documentStyle": {
+      "type": "object",
+      "description": "Styling for the article document background.",
+      "properties": {
+        "backgroundColor": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata about the article (excerpt, thumbnail, etc.)."
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "Layout": {
+      "type": "object",
+      "description": "Defines the column layout for the article.",
+      "required": ["columns", "width"],
+      "additionalProperties": true,
+      "properties": {
+        "columns": {
+          "type": "integer",
+          "description": "The number of columns in the article layout.",
+          "minimum": 1
+        },
+        "width": {
+          "type": "number",
+          "description": "The width of the article in points.",
+          "exclusiveMinimum": 0
+        },
+        "margin": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "#/definitions/Margin" }
+          ]
+        },
+        "gutter": {
+          "type": "number",
+          "description": "The gutter size between columns in points."
+        }
+      }
+    },
+    "Margin": {
+      "type": "object",
+      "properties": {
+        "top": { "type": "number" },
+        "bottom": { "type": "number" },
+        "left": { "type": "number" },
+        "right": { "type": "number" }
+      }
+    },
+    "Component": {
+      "type": "object",
+      "description": "A component object in the article body.",
+      "required": ["role"],
+      "additionalProperties": true,
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "The role (type) of the component.",
+          "enum": [
+            "title",
+            "heading",
+            "heading1",
+            "heading2",
+            "heading3",
+            "heading4",
+            "heading5",
+            "heading6",
+            "intro",
+            "body",
+            "byline",
+            "caption",
+            "pullquote",
+            "quote",
+            "photo",
+            "figure",
+            "video",
+            "audio",
+            "music",
+            "tweet",
+            "instagram",
+            "facebook_post",
+            "embed",
+            "embedwebvideo",
+            "embedvideo",
+            "banner_advertisement",
+            "medium_rectangle_advertisement",
+            "divider",
+            "container",
+            "section",
+            "chapter",
+            "aside",
+            "header",
+            "footer",
+            "illustration",
+            "logo",
+            "map",
+            "place",
+            "gallery",
+            "mosaic",
+            "scrolling_gallery",
+            "scrolling",
+            "table",
+            "html_table",
+            "data_table",
+            "article_link",
+            "link_button",
+            "button",
+            "arkit",
+            "augmented_reality",
+            "author",
+            "broadcaster_ad",
+            "collection",
+            "text",
+            "podcast",
+            "replaykit",
+            "place_overlay",
+            "scalable_image",
+            "add_to_apple_news",
+            "social_media_button",
+            "sticker"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "description": "The text content of the component (for text-based components)."
+        },
+        "textStyle": {
+          "description": "A reference to a named componentTextStyle, or an inline ComponentTextStyle object.",
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/ComponentTextStyle" }
+          ]
+        },
+        "layout": {
+          "description": "A reference to a named componentLayout, or an inline ComponentLayout object.",
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/ComponentLayout" }
+          ]
+        },
+        "style": {
+          "description": "A reference to a named componentStyle, or an inline ComponentStyle object.",
+          "oneOf": [
+            { "type": "string" },
+            { "$ref": "#/definitions/ComponentStyle" }
+          ]
+        },
+        "components": {
+          "type": "array",
+          "description": "Nested child components.",
+          "items": {
+            "$ref": "#/definitions/Component"
+          }
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "anchor": {
+          "type": "object"
+        },
+        "animation": {
+          "type": "object"
+        },
+        "behavior": {
+          "type": "object"
+        },
+        "additions": {
+          "type": "array"
+        },
+        "conditional": {
+          "type": "array"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "URL": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "ComponentTextStyle": {
+      "type": "object",
+      "description": "Text style properties for a component.",
+      "additionalProperties": true,
+      "properties": {
+        "fontName": { "type": "string" },
+        "fontSize": { "type": "number" },
+        "fontColor": { "type": "string" },
+        "fontWeight": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "integer" }
+          ]
+        },
+        "fontStyle": {
+          "type": "string",
+          "enum": ["normal", "italic", "oblique"]
+        },
+        "textAlignment": {
+          "type": "string",
+          "enum": ["left", "right", "center", "justified", "none"]
+        },
+        "lineHeight": { "type": "number" },
+        "tracking": { "type": "number" },
+        "textColor": { "type": "string" },
+        "dropCapStyle": { "type": "object" },
+        "hangingPunctuation": { "type": "boolean" },
+        "hyphenation": { "type": "boolean" },
+        "orderedListItems": { "type": "object" },
+        "unorderedListItems": { "type": "object" },
+        "paragraphSpacingBefore": { "type": "number" },
+        "paragraphSpacingAfter": { "type": "number" },
+        "strikethrough": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "object" }
+          ]
+        },
+        "underline": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "object" }
+          ]
+        }
+      }
+    },
+    "ComponentLayout": {
+      "type": "object",
+      "description": "Layout settings for a component.",
+      "additionalProperties": true,
+      "properties": {
+        "columnStart": { "type": "integer", "minimum": 0 },
+        "columnSpan": { "type": "integer", "minimum": 1 },
+        "contentInset": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "object" }
+          ]
+        },
+        "horizontalContentAlignment": {
+          "type": "string",
+          "enum": ["left", "right", "center"]
+        },
+        "ignoreDocumentGutter": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string" }
+          ]
+        },
+        "ignoreDocumentMargin": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string" }
+          ]
+        },
+        "margin": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "#/definitions/Margin" }
+          ]
+        },
+        "maximumContentWidth": {
+          "oneOf": [
+            { "type": "number" },
+            { "type": "string" }
+          ]
+        },
+        "minimumHeight": {
+          "oneOf": [
+            { "type": "number" },
+            { "type": "string" }
+          ]
+        },
+        "padding": {
+          "oneOf": [
+            { "type": "number" },
+            { "$ref": "#/definitions/Margin" }
+          ]
+        }
+      }
+    },
+    "ComponentStyle": {
+      "type": "object",
+      "description": "Visual style settings for a component.",
+      "additionalProperties": true,
+      "properties": {
+        "backgroundColor": { "type": "string" },
+        "border": { "type": "object" },
+        "fill": { "type": "object" },
+        "mask": { "type": "object" },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "shadow": { "type": "object" },
+        "tableStyle": { "type": "object" }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "version": "1.26",
+  "identifier": "dangling-refs",
+  "title": "Article with Dangling References",
+  "language": "en",
+  "layout": {
+    "columns": 7,
+    "width": 1024
+  },
+  "components": [
+    {
+      "role": "title",
+      "text": "My Title",
+      "textStyle": "nonexistent-title-style"
+    },
+    {
+      "role": "body",
+      "text": "Body text with bad layout ref.",
+      "layout": "nonexistent-layout",
+      "style": "nonexistent-style"
+    }
+  ],
+  "componentTextStyles": {
+    "default-body": {
+      "fontSize": 18
+    }
+  },
+  "componentLayouts": {
+    "real-layout": {
+      "columnStart": 0,
+      "columnSpan": 5
+    }
+  },
+  "componentStyles": {
+    "real-style": {
+      "backgroundColor": "#FFFFFF"
+    }
+  }
+}
