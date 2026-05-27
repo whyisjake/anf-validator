@@ -1,0 +1,14 @@
+{
+  "version": "1.26",
+  "title": "Missing Required Fields",
+  "layout": {
+    "columns": 7,
+    "width": 1024
+  },
+  "components": [
+    {
+      "role": "body",
+      "text": "No identifier, no language, no componentTextStyles."
+    }
+  ]
+}

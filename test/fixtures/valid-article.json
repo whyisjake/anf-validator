@@ -1,0 +1,45 @@
+{
+  "version": "1.26",
+  "identifier": "my-test-article",
+  "title": "A Valid Test Article",
+  "language": "en",
+  "layout": {
+    "columns": 7,
+    "width": 1024,
+    "margin": 60,
+    "gutter": 20
+  },
+  "components": [
+    {
+      "role": "title",
+      "text": "A Valid Test Article",
+      "textStyle": "default-title"
+    },
+    {
+      "role": "body",
+      "text": "This is the body text.",
+      "textStyle": "default-body",
+      "layout": "body-layout"
+    }
+  ],
+  "componentTextStyles": {
+    "default-title": {
+      "fontName": "HelveticaNeue-Bold",
+      "fontSize": 36,
+      "textColor": "#000000"
+    },
+    "default-body": {
+      "fontName": "Georgia",
+      "fontSize": 18,
+      "textColor": "#333333",
+      "lineHeight": 26
+    }
+  },
+  "componentLayouts": {
+    "body-layout": {
+      "columnStart": 0,
+      "columnSpan": 5,
+      "margin": { "top": 15, "bottom": 15 }
+    }
+  }
+}

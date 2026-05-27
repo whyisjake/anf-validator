@@ -1,0 +1,57 @@
+{
+  "name": "anf-validator",
+  "displayName": "ANF Validator",
+  "description": "Validates article.json files against the Apple News Format (ANF) specification",
+  "version": "0.1.0",
+  "publisher": "whyisjake",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "apple news",
+    "apple news format",
+    "anf",
+    "article.json",
+    "validator",
+    "linter",
+    "json"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/article.json"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {},
+  "scripts": {
+    "vscode:prepublish": "node esbuild.js --production",
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "ajv": "^8.17.1",
+    "ajv-draft-04": "^1.0.0",
+    "ajv-formats": "^3.0.1",
+    "esbuild": "^0.24.0",
+    "json-source-map": "^0.6.1",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whyisjake/anf-validator"
+  },
+  "galleryBanner": {
+    "color": "#1D1D1F",
+    "theme": "dark"
+  },
+  "icon": "media/icon.png"
+}
