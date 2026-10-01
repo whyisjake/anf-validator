@@ -9,13 +9,21 @@ A VS Code extension that validates `article.json` files against the [Apple News 
 - **JSON Schema validation** — checks required fields (`version`, `identifier`, `title`, `language`, `layout`, `components`, `componentTextStyles`), field types, and ANF-specific patterns
 - **Cross-reference validation** — detects dangling `textStyle`, `layout`, and `style` references in components that point to missing entries in root dictionaries
 - **Actionable diagnostics** — every error appears in the VS Code Problems panel with a human-readable description and a fix suggestion
-- **Validates on open and save** — diagnostics update automatically when you open or save an `article.json` file
+- **Validates on change** — diagnostics update when you open an `article.json` or when it changes on disk from any source (editor saves, build scripts, git checkouts)
+- **URL reachability checks** — image and media URLs are checked with an HTTP request; broken links (404, 403, 5xx, network errors) show up as warnings
+
+---
+
+## Installation
+
+- **VS Code:** install [ANF Validator](https://marketplace.visualstudio.com/items?itemName=whyisjake.anf-validator) from the Visual Studio Marketplace.
+- **Cursor, Windsurf, VSCodium:** install from [Open VSX](https://open-vsx.org/extension/whyisjake/anf-validator), or download the `.vsix` from [GitHub Releases](https://github.com/whyisjake/anf-validator/releases) and use **Extensions → … → Install from VSIX…**
 
 ---
 
 ## Requirements
 
-- VS Code 1.90 or later
+- VS Code 1.90 or later (or a compatible editor such as Cursor)
 - A workspace (folder) containing one or more `article.json` files
 
 ---
@@ -47,14 +55,16 @@ The bundled schema covers ANF 1.26.0 and validates:
 
 ## Extension Settings
 
-This extension has no configurable settings.
+| Setting | Default | Description |
+|---|---|---|
+| `anfValidator.checkUrls` | `true` | Check that image and media URLs in `article.json` are reachable. Turn this off on restricted or offline networks. |
 
 ---
 
 ## Known Issues
 
 - The bundled ANF JSON Schema covers the most common fields and component types. Properties not explicitly listed are allowed (`additionalProperties: true` for components). If you encounter a false positive for a valid ANF property, please [open an issue](https://github.com/whyisjake/anf-validator/issues).
-- Validation runs on open and save only — live typing does not trigger re-validation.
+- Validation runs when the file is opened or changes on disk. Live typing does not trigger re-validation until you save.
 
 ---
 
@@ -65,6 +75,8 @@ This extension has no configurable settings.
 - JSON Schema validation for ANF `article.json` files
 - Cross-reference validation for `textStyle`, `layout`, and `style` refs
 - Diagnostics in the VS Code Problems panel
+- Re-validation when `article.json` changes on disk
+- URL reachability warnings (`anfValidator.checkUrls`)
 
 ---
 
