@@ -8,3 +8,6 @@ esbuild.js
 tsconfig.json
 .gitignore
 *.vsix
+.DS_Store
+**/.DS_Store
+*.textClipping
